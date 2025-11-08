@@ -1,0 +1,113 @@
+def read_data():
+    '''
+    Gets the data of the package from user.
+    Args:
+        none 
+    Returns:
+        length, height, thickness startzip, endzip
+    '''
+    data = input("input your mailing data ").split(',')
+    length = float(data[0])
+    height = float(data[1])
+    thickness = float(data[2])
+    startzip = int(data[3])
+    endzip = int(data[4])
+    return length, height, thickness, startzip, endzip
+
+def get_type(length, height, thickness):
+    '''
+    Determines the package type.
+    Args:
+        length of item
+        hight of item 
+        thickness of item
+    Returns:
+        postcard type
+    '''
+    if 3.5 <= length <= 4.25 and 3.5 <= height <= 6 and .007 <= thickness <= .016:
+        return "regular postcard"
+    elif 4.25 <= length <= 6 and 6 <= height <= 11.5 and .007 <= thickness <= .015:
+        return "large postcard"
+    elif 3.5 <= length <= 6.125 and 5 <= height <= 11.5 and .016 <= thickness <= .25:
+        return "envelope"
+    elif 6.125 <= length <= 24 and 11 <= height <= 18 and .25 <= thickness <= .5:
+        return "large envelope"
+    elif length > 24 or height > 18 or thickness > .5 and length + 2*(height + thickness) <= 84:
+        return "package"
+    elif length > 24 or height > 18 or thickness > .5 and 84 <= length + 2*(height + thickness) <= 130:
+        return "large package"
+    else:
+        return "unmailable"
+
+def get_zones(zipcode):
+    '''
+    Determies the zone for a zipcode
+    Args:
+        zipcode
+    Returns:
+        zone number 
+    '''
+    if 1 <= zipcode <= 6999:
+        return 1
+    if 7000 <= zipcode <= 19999:
+        return 2
+    if 20000 <= zipcode <= 35999:
+        return 3
+    if 36000 <= zipcode <= 62999:
+        return 4
+    if 63000 <= zipcode <= 84999:
+        return 5
+    if 85000 <= zipcode <= 99999:
+        return 6
+    else:   
+        return -1
+
+def get_distance(startzip, endzip):
+    '''
+    Gets the distance between startzip and endzip.
+    Args:
+        startzip, endzip
+    Returns:
+        distance of zones
+    '''
+    startzone = get_zones(startzip)
+    endzone = get_zones(endzip)
+
+    if startzone == -1 or endzone == -1:
+        return 'Unmailable'
+    return abs(endzone - startzone)
+
+def get_cost(post_type, distance):
+    '''
+    Calculates the cost.
+    Args:
+        post_type distance
+    Returns:
+        cost to mail 
+    '''
+    if post_type == "unmailable" or distance == 'Unmailable':
+        return 'Unmailable'
+    elif post_type == "regular postcard":
+        return .20 + .03*distance
+    elif post_type == "large postcard":
+        return .37 + .03*distance
+    elif post_type == "envelope":
+        return .37 + .04*distance
+    elif post_type == "large envelope":
+        return .60 + .05*distance
+    elif post_type == "package":
+        return 2.95 + .25*distance
+    elif post_type == "large package":
+        return  3.95 + .35*distance
+    
+def main():
+    while True:
+        length, height, thickness, startzip, endzip = read_data()
+        post_type = get_type(length, height, thickness)
+        distance = get_distance(startzip, endzip)
+        cost = get_cost(post_type, distance)
+        cost = f"{cost:.2f}"
+        cost = cost.lstrip('0')
+        print(cost)
+   
+main()
